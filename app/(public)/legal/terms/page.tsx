@@ -23,7 +23,7 @@ export default function TermsPage() {
         <h2 className="text-lg font-semibold text-foreground">3. Section 230 Notice</h2>
         <p>ScamAlertDB is an interactive computer service as defined under 47 U.S.C. § 230. We are not the publisher or speaker of user-submitted content. We are not liable for content submitted by third parties. Reports reflect the opinions and experiences of submitters, not the views of ScamAlertDB.</p>
 
-        <h2 className="text-lg font-semibold text="foreground">4. Prohibited Uses</h2>
+        <h2 className="text-lg font-semibold text-foreground">4. Prohibited Uses</h2>
         <p>You may not use the Site to: post false or fabricated reports; harass, threaten, or target individuals; upload content that infringes on intellectual property rights; attempt to circumvent our security systems; or use automated tools to scrape or interfere with the Site.</p>
 
         <h2 className="text-lg font-semibold text-foreground">5. Disclaimers</h2>
