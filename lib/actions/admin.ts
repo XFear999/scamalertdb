@@ -2,6 +2,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import type { ReportStatus, Json, Platform } from '@/types/database'
 
 export interface AdminReport {
@@ -70,7 +71,7 @@ export interface AuditLog {
 async function getAdminUser() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Unauthorized')
+  if (!user) redirect('/admin/login')
   return user
 }
 

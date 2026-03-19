@@ -1,9 +1,10 @@
 import { getAdminReports } from '@/lib/actions/admin'
-import { formatDateShort, formatPlatformLabel, formatScamTypeLabel, getStatusBadgeClasses } from '@/lib/utils'
-import { Card, CardContent } from '@/components/ui/card'
+import { formatDateShort, formatPlatformLabel, getStatusBadgeClasses } from '@/lib/utils'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { ExternalLink, Eye } from 'lucide-react'
+import { StatusFilter } from './StatusFilter'
 
 interface Props {
   searchParams: Promise<{ status?: string; platform?: string; page?: string }>
@@ -20,8 +21,6 @@ export default async function AdminReportsPage({ searchParams }: Props) {
 
   const totalPages = Math.ceil(total / 25)
 
-  const STATUS_OPTIONS = ['', 'pending', 'published', 'disputed', 'resolved', 'removed', 'rejected']
-
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -30,21 +29,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
           <p className="text-slate-500 text-sm">{total.toLocaleString()} total reports</p>
         </div>
         <div className="flex gap-2">
-          <select
-            className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm"
-            defaultValue={params.status ?? ''}
-            onChange={e => {
-              const url = new URL(window.location.href)
-              if (e.target.value) url.searchParams.set('status', e.target.value)
-              else url.searchParams.delete('status')
-              window.location.href = url.toString()
-            }}
-          >
-            <option value="">All Statuses</option>
-            {STATUS_OPTIONS.filter(Boolean).map(s => (
-              <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-            ))}
-          </select>
+          <StatusFilter current={params.status} />
         </div>
       </div>
 
