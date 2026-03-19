@@ -37,13 +37,10 @@ export async function getReportBySlug(slug: string) {
     .eq('report_id', report.id)
     .eq('is_public', true)
 
-  // Increment view count (fire and forget via admin client)
+  // Increment view count (fire and forget)
   try {
     const admin = createAdminClient()
-    await admin
-      .from('reports')
-      .update({ view_count: supabase.rpc('increment_view_count', { report_slug: slug }) as unknown as number })
-      .eq('slug', slug)
+    await admin.rpc('increment_view_count', { report_slug: slug })
   } catch { /* non-critical */ }
 
   return { ...report, evidence: evidence ?? [] }
