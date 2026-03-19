@@ -4,8 +4,26 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { normalizePhoneNumber, maskPhoneNumber, generateSlug } from '@/lib/utils'
 import type { SearchFilters } from '@/types'
+import type { ReportStatus, Platform, ScamType } from '@/types/database'
 
-export async function getRecentReports(limit = 6) {
+export interface PublicReportSummary {
+  id: string
+  slug: string
+  title: string
+  summary: string | null
+  platform: string
+  scam_type: string
+  alleged_name: string | null
+  business_name: string | null
+  phone_masked_public: string | null
+  username_handle: string | null
+  amount_range: string | null
+  published_at: string | null
+  report_status: ReportStatus
+  view_count: number
+}
+
+export async function getRecentReports(limit = 6): Promise<PublicReportSummary[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('reports')
@@ -15,7 +33,7 @@ export async function getRecentReports(limit = 6) {
     .limit(limit)
 
   if (error) throw new Error(error.message)
-  return data ?? []
+  return (data ?? []) as PublicReportSummary[]
 }
 
 export async function getReportBySlug(slug: string) {
@@ -66,8 +84,8 @@ export async function searchReports(filters: SearchFilters, page = 1, perPage = 
     }
   }
 
-  if (filters.platform) query = query.eq('platform', filters.platform)
-  if (filters.scam_type) query = query.eq('scam_type', filters.scam_type)
+  if (filters.platform) query = query.eq('platform', filters.platform as Platform)
+  if (filters.scam_type) query = query.eq('scam_type', filters.scam_type as ScamType)
 
   if (filters.sort === 'views') {
     query = query.order('view_count', { ascending: false })
@@ -82,7 +100,7 @@ export async function searchReports(filters: SearchFilters, page = 1, perPage = 
   if (error) throw new Error(error.message)
 
   return {
-    data: data ?? [],
+    data: (data ?? []) as PublicReportSummary[],
     meta: {
       page,
       per_page: perPage,
@@ -92,7 +110,18 @@ export async function searchReports(filters: SearchFilters, page = 1, perPage = 
   }
 }
 
-export async function getRelatedReports(reportId: string, platform: string, phone?: string | null, limit = 4) {
+export interface RelatedReportSummary {
+  id: string
+  slug: string
+  title: string
+  summary: string | null
+  platform: string
+  scam_type: string
+  published_at: string | null
+  report_status: ReportStatus
+}
+
+export async function getRelatedReports(reportId: string, platform: string, phone?: string | null, limit = 4): Promise<RelatedReportSummary[]> {
   const supabase = await createClient()
 
   let query = supabase
@@ -106,15 +135,14 @@ export async function getRelatedReports(reportId: string, platform: string, phon
     const normalized = normalizePhoneNumber(phone)
     query = query.eq('phone_search_normalized', normalized)
   } else {
-    query = query.eq('platform', platform)
+    query = query.eq('platform', platform as Platform)
   }
 
   const { data } = await query
-  return data ?? []
+  return (data ?? []) as RelatedReportSummary[]
 }
 
 export async function submitReport(formData: FormData) {
-  const supabase = await createClient()
   const admin = createAdminClient()
 
   const title = formData.get('title') as string
@@ -128,8 +156,8 @@ export async function submitReport(formData: FormData) {
     title: title.trim(),
     summary: ((formData.get('description') as string) || '').slice(0, 300),
     description: formData.get('description') as string,
-    platform: formData.get('platform') as string,
-    scam_type: formData.get('scam_type') as string,
+    platform: formData.get('platform') as Platform,
+    scam_type: formData.get('scam_type') as ScamType,
     alleged_name: (formData.get('alleged_name') as string) || null,
     business_name: (formData.get('business_name') as string) || null,
     phone_full_private: phone || null,

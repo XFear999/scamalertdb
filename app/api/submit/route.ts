@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { normalizePhoneNumber, maskPhoneNumber, generateSlug } from '@/lib/utils'
+import type { Platform, ScamType, ReportStatus } from '@/types/database'
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,8 +23,8 @@ export async function POST(req: NextRequest) {
         title: title.trim(),
         summary: description.slice(0, 300),
         description,
-        platform: formData.get('platform') as string,
-        scam_type: formData.get('scam_type') as string,
+        platform: formData.get('platform') as Platform,
+        scam_type: formData.get('scam_type') as ScamType,
         alleged_name: (formData.get('alleged_name') as string) || null,
         business_name: (formData.get('business_name') as string) || null,
         phone_full_private: phone || null,
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
         incident_date: (formData.get('incident_date') as string) || null,
         amount_range: (formData.get('amount_range') as string) || null,
         location_general: (formData.get('location_general') as string) || null,
-        report_status: 'pending',
+        report_status: 'pending' as ReportStatus,
         created_by_submitter_email: formData.get('submitter_email') as string,
       })
       .select('id,slug')

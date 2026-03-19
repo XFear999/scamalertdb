@@ -1,5 +1,4 @@
-import { getContactMessages } from '@/lib/actions/admin'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { getContactMessages, markContactMessageRead } from '@/lib/actions/admin'
 import { formatDate } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
 import { Mail, CheckCircle } from 'lucide-react'
@@ -7,8 +6,7 @@ import { revalidatePath } from 'next/cache'
 
 async function markRead(formData: FormData) {
   'use server'
-  const admin = createAdminClient()
-  await admin.from('contact_messages').update({ status: 'read' }).eq('id', formData.get('id') as string)
+  await markContactMessageRead(formData.get('id') as string)
   revalidatePath('/admin/messages')
 }
 

@@ -47,13 +47,59 @@ export interface Database {
           updated_at: string
           created_by_submitter_email: string | null
         }
-        Insert: Omit<Database['public']['Tables']['reports']['Row'], 'id' | 'submitted_at' | 'updated_at' | 'view_count'> & {
+        Insert: {
           id?: string
+          slug: string
+          title: string
+          summary?: string | null
+          description: string
+          platform: Platform
+          scam_type: ScamType
+          alleged_name?: string | null
+          business_name?: string | null
+          phone_full_private?: string | null
+          phone_search_normalized?: string | null
+          phone_masked_public?: string | null
+          username_handle?: string | null
+          alleged_email?: string | null
+          incident_date?: string | null
+          amount_range?: string | null
+          location_general?: string | null
+          report_status?: ReportStatus
+          moderation_notes?: string | null
+          view_count?: number
+          published_at?: string | null
           submitted_at?: string
           updated_at?: string
-          view_count?: number
+          created_by_submitter_email?: string | null
         }
-        Update: Partial<Database['public']['Tables']['reports']['Insert']>
+        Update: {
+          id?: string
+          slug?: string
+          title?: string
+          summary?: string | null
+          description?: string
+          platform?: Platform
+          scam_type?: ScamType
+          alleged_name?: string | null
+          business_name?: string | null
+          phone_full_private?: string | null
+          phone_search_normalized?: string | null
+          phone_masked_public?: string | null
+          username_handle?: string | null
+          alleged_email?: string | null
+          incident_date?: string | null
+          amount_range?: string | null
+          location_general?: string | null
+          report_status?: ReportStatus
+          moderation_notes?: string | null
+          view_count?: number
+          published_at?: string | null
+          submitted_at?: string
+          updated_at?: string
+          created_by_submitter_email?: string | null
+        }
+        Relationships: []
       }
       report_evidence: {
         Row: {
@@ -66,11 +112,27 @@ export interface Database {
           is_public: boolean
           created_at: string
         }
-        Insert: Omit<Database['public']['Tables']['report_evidence']['Row'], 'id' | 'created_at'> & {
+        Insert: {
           id?: string
+          report_id: string
+          file_url: string
+          file_path: string
+          mime_type?: string | null
+          is_redacted?: boolean
+          is_public?: boolean
           created_at?: string
         }
-        Update: Partial<Database['public']['Tables']['report_evidence']['Insert']>
+        Update: {
+          id?: string
+          report_id?: string
+          file_url?: string
+          file_path?: string
+          mime_type?: string | null
+          is_redacted?: boolean
+          is_public?: boolean
+          created_at?: string
+        }
+        Relationships: []
       }
       disputes: {
         Row: {
@@ -88,12 +150,37 @@ export interface Database {
           created_at: string
           updated_at: string
         }
-        Insert: Omit<Database['public']['Tables']['disputes']['Row'], 'id' | 'created_at' | 'updated_at'> & {
+        Insert: {
           id?: string
+          report_id: string
+          requester_name: string
+          requester_email: string
+          requester_phone?: string | null
+          relationship_to_report: string
+          reason: string
+          explanation: string
+          supporting_evidence_url?: string | null
+          status?: 'open' | 'under_review' | 'resolved' | 'dismissed'
+          admin_notes?: string | null
           created_at?: string
           updated_at?: string
         }
-        Update: Partial<Database['public']['Tables']['disputes']['Insert']>
+        Update: {
+          id?: string
+          report_id?: string
+          requester_name?: string
+          requester_email?: string
+          requester_phone?: string | null
+          relationship_to_report?: string
+          reason?: string
+          explanation?: string
+          supporting_evidence_url?: string | null
+          status?: 'open' | 'under_review' | 'resolved' | 'dismissed'
+          admin_notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       contact_messages: {
         Row: {
@@ -106,11 +193,27 @@ export interface Database {
           status: 'unread' | 'read' | 'replied' | 'archived'
           created_at: string
         }
-        Insert: Omit<Database['public']['Tables']['contact_messages']['Row'], 'id' | 'created_at'> & {
+        Insert: {
           id?: string
+          name: string
+          email: string
+          subject: string
+          category: string
+          message: string
+          status?: 'unread' | 'read' | 'replied' | 'archived'
           created_at?: string
         }
-        Update: Partial<Database['public']['Tables']['contact_messages']['Insert']>
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          subject?: string
+          category?: string
+          message?: string
+          status?: 'unread' | 'read' | 'replied' | 'archived'
+          created_at?: string
+        }
+        Relationships: []
       }
       audit_logs: {
         Row: {
@@ -122,11 +225,25 @@ export interface Database {
           details_json: Json | null
           created_at: string
         }
-        Insert: Omit<Database['public']['Tables']['audit_logs']['Row'], 'id' | 'created_at'> & {
+        Insert: {
           id?: string
+          actor_id?: string | null
+          action_type: string
+          target_type: string
+          target_id?: string | null
+          details_json?: Json | null
           created_at?: string
         }
-        Update: Partial<Database['public']['Tables']['audit_logs']['Insert']>
+        Update: {
+          id?: string
+          actor_id?: string | null
+          action_type?: string
+          target_type?: string
+          target_id?: string | null
+          details_json?: Json | null
+          created_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -149,6 +266,7 @@ export interface Database {
           view_count: number
           published_at: string | null
         }
+        Relationships: []
       }
     }
     Functions: {
@@ -167,6 +285,12 @@ export interface Database {
         Args: { report_slug: string }
         Returns: void
       }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }
